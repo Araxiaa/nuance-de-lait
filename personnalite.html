@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personnalité — Nuance de Lait</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <svg class="sidebar__sprig" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M24 44C24 44 12 34 12 22C12 14 17 8 24 6C31 8 36 14 36 22C36 34 24 44 24 44Z" stroke="currentColor" stroke-width="1.6" fill="rgba(169,201,180,0.25)"/>
+        <path d="M24 6V38" stroke="currentColor" stroke-width="1.2"/>
+        <path d="M24 14C20 16 17 19 16 23" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <path d="M24 22C28 24 31 27 32 31" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+      <div class="sidebar__name">Nuance<br>de Lait</div>
+      <div class="sidebar__clan">Clan de l'Ombre</div>
+    </div>
+
+    <nav class="sidebar__nav" aria-label="Navigation principale">
+      <a class="sidebar__link" href="index.html">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+        Accueil
+      </a>
+      <a class="sidebar__link is-active" href="personnalite.html">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+        Personnalité
+      </a>
+      <a class="sidebar__link" href="physique.html">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3c-3 3-3 6 0 9s3 6 0 9"/><path d="M8 21h8"/></svg>
+        Physique
+      </a>
+      <a class="sidebar__link" href="relations.html">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 8a4 4 0 10-7 2.6L12 12l-1-1.4A4 4 0 104 8c0 5 8 11 8 11s8-6 8-11z"/></svg>
+        Relations
+      </a>
+      <a class="sidebar__link" href="portfolio.html">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-4-4 3-3-2-5 4"/></svg>
+        Portfolio
+      </a>
+      <a class="sidebar__link" href="histoire.html">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h13a3 3 0 013 3v13H7a3 3 0 01-3-3V4z"/><path d="M8 8h8M8 12h8"/></svg>
+        Histoire
+      </a>
+    </nav>
+
+    <div class="sidebar__footer">
+      Le Prix de la Trêve<br>
+      OC &amp; crédits · .araxia.
+    </div>
+  </aside>
+
+  <!-- ================= CONTENU ================= -->
+  <main class="main">
+
+    <header class="page-header">
+      <p class="page-header__eyebrow">Caractère &amp; personnalité</p>
+      <h1 class="page-header__title">Sous l'armure de vanité</h1>
+      <p class="page-header__intro">
+        Diva théâtrale en façade, roc psychologique en réalité. Clique sur une carte pour découvrir
+        chaque facette de Nuance de Lait en détail.
+      </p>
+    </header>
+
+    <section class="topic-grid" aria-label="Sujets de personnalité">
+
+      <button class="topic-card" data-popup-target="pop-qualites">
+        <svg class="topic-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-0.5z"/></svg>
+        <span class="topic-card__title">Qualités</span>
+        <span class="topic-card__excerpt">Empathique, résilient, diplomate, flegmatique.</span>
+      </button>
+
+      <button class="topic-card" data-popup-target="pop-defauts">
+        <svg class="topic-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M2 12h20" stroke-opacity="0"/><circle cx="12" cy="12" r="9"/><path d="M9 15l6-6M9 9l6 6"/></svg>
+        <span class="topic-card__title">Défauts</span>
+        <span class="topic-card__excerpt">Superficiel, cynique, oisif, sarcastique.</span>
+      </button>
+
+      <button class="topic-card" data-popup-target="pop-description">
+        <svg class="topic-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19V5a2 2 0 012-2h9l5 5v11a2 2 0 01-2 2H6a2 2 0 01-2-2z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
+        <span class="topic-card__title">Description globale</span>
+        <span class="topic-card__excerpt">La diva bienveillante du Clan de l'Ombre.</span>
+      </button>
+
+      <button class="topic-card" data-popup-target="pop-gouts">
+        <svg class="topic-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21c4.4-3 8-6.5 8-11a5 5 0 00-8-4 5 5 0 00-8 4c0 4.5 3.6 8 8 11z"/></svg>
+        <span class="topic-card__title">Goûts</span>
+        <span class="topic-card__excerpt">Soin, élégance, récits du passé, confidences.</span>
+      </button>
+
+      <button class="topic-card" data-popup-target="pop-degouts">
+        <svg class="topic-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21c4.4-3 8-6.5 8-11a5 5 0 00-8-4 5 5 0 00-8 4c0 4.5 3.6 8 8 11z" stroke-dasharray="3 3"/></svg>
+        <span class="topic-card__title">Dégoûts</span>
+        <span class="topic-card__excerpt">Saleté, ordres, saisons extrêmes, arbitrage.</span>
+      </button>
+
+      <button class="topic-card" data-popup-target="pop-peurs">
+        <svg class="topic-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C7 6 4 10 4 14a8 8 0 0016 0c0-4-3-8-8-12z"/></svg>
+        <span class="topic-card__title">Peurs &amp; phobies</span>
+        <span class="topic-card__excerpt">Le soleil, le jugement, la contagion.</span>
+      </button>
+
+      <button class="topic-card" data-popup-target="pop-habitudes">
+        <svg class="topic-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        <span class="topic-card__title">Habitudes &amp; tics</span>
+        <span class="topic-card__excerpt">Rituel skincare, démarche royale, limage des griffes.</span>
+      </button>
+
+    </section>
+
+  </main>
+</div>
+
+<!-- ================= POPUP OVERLAY ================= -->
+<div class="popup-overlay" id="popup-overlay">
+  <div class="popup__panel" role="dialog" aria-modal="true">
+    <button class="popup__close" aria-label="Fermer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <h2 class="popup__title"></h2>
+    <div class="popup__body"></div>
+  </div>
+</div>
+
+<!-- ================= CONTENUS DES POPUPS (templates) ================= -->
+<div hidden>
+
+  <div id="pop-qualites" data-title="Qualités">
+    <h4>Empathique</h4>
+    <p>Dépourvu de tout jugement et profondément à l'écoute des émotions d'autrui, Nuance de Lait est un confident hors pair. Parce qu'il a lui-même connu le poids des regards, son cœur bat particulièrement pour les marginaux, les exclus et les âmes meurtries du clan, auprès desquelles il s'impose comme un allié indéfectible.</p>
+    <h4>Résilient</h4>
+    <p>Sa condition physique atypique et fragile lui a imposé une discipline de fer. Il a appris à écouter les moindres murmures de son corps et les cycles de la nature pour survivre. Là où d'autres cèdent à la panique face au changement ou à la crise, lui s'adapte avec un flegme déconcertant, emportant ses véritables douleurs dans un silence digne.</p>
+    <h4>Diplomate</h4>
+    <p>Héritier spirituel de la sagesse de son père, il possède une patience infinie et une grande finesse psychologique. Nuance de Lait sait désamorcer les conflits d'un simple mot d'esprit bien placé ou d'un ton mielleux dont il a le secret. C'est le chat de l'ombre que l'on sollicite pour apaiser les disputes de frontières ou les rivalités internes sans verser une seule goutte de sang.</p>
+    <h4>Flegmatique</h4>
+    <p>Rien ne semble pouvoir ébranler son calme olympien. Ayant survécu à la tyrannie, aux épidémies et à sa propre vulnérabilité génétique, il contemple le danger avec un détachement souverain. Face à la menace, cette impassibilité presque royale devient un ancrage rassurant pour tout son entourage.</p>
+  </div>
+
+  <div id="pop-defauts" data-title="Défauts">
+    <h4>Superficiel</h4>
+    <p>Pour compenser les caprices de son physique, il a développé une obsession maladive du détail et de la coquetterie. Nuance de Lait peut passer des lunes à bouder parce qu'on a abîmé ses herbes aromatiques, faire une scène théâtrale pour une ronce mal placée dans son nid, ou refuser catégoriquement d'entrer dans un antre jugé « malodorant ». Il peut pester des heures durant contre une goutte de boue sur ses chaussettes blanches ou contre le vent qui ébouriffe son rare pelage.</p>
+    <h4>Cynique</h4>
+    <p>Du haut de ses 74 lunes, il a vu les illusions du clan s'effondrer une à une. La dérive d'Étoile Douce et l'horreur des Dynastes ont définitivement émoussé sa foi en la « grandeur » des lois guerrières. Même le silence du Clan des Étoiles le laisse de marbre. Sous sa bienveillance de façade, il dissimule un scepticisme piquant vis-à-vis des traditions sacrées.</p>
+    <h4>Oisif</h4>
+    <p>Si son système immunitaire défaillant l'oblige légitimement à se ménager, Nuance de Lait a brillamment érigé la paresse au rang d'art de vivre. Horripilé par l'effort physique inutile, il est passé maître dans l'art d'esquiver les corvées, sachant pousser les apprentis naïfs ou les jeunes guerriers trop fiers à accomplir ses tâches à sa place.</p>
+    <h4>Sarcasme</h4>
+    <p>Sa diplomatie légendaire s'arrête là où commencent la bêtise d'autrui ou les attaques sur son physique. En un instant, sa douceur s'efface au profit d'une ironie mordante, capable de blesser un ennemi ou un camarade bien plus profondément que le plus aiguisé des coups de griffe.</p>
+  </div>
+
+  <div id="pop-description" data-title="Description globale">
+    <p>Nuance de Lait est un paradoxe ambulant, une créature de contrastes qui détonne magnifiquement sous la voûte sombre et brumeuse du Clan de l'Ombre. Du haut de ses 74 lunes, ce vétéran au physique singulier a troqué la brutalité des griffes contre l'art de la mise en scène et la force du mot juste. Il est la « diva bienveillante » du camp, un esthète qui refuse de laisser la ruine et l'anxiété ambiantes dicter sa conduite. Pour lui, la coquetterie n'est pas une simple futilité : c'est un acte de résistance.</p>
+    <p>Sous cette armure de vanité théâtrale et de manières affectées se cache pourtant l'un des cœurs les plus profondément empathiques de la forêt. Élevé dans l'absence de jugement par ses défunts parents, il a fait de sa propre différence une passerelle vers les autres — le refuge des éclopés, le confident des marginaux, l'oreille attentive des guerriers brisés. Rien ne le fait paniquer ; il contemple les crises actuelles avec le détachement souverain de celui qui a déjà survécu au pire.</p>
+    <p>Cependant, ne vous y trompez pas : Nuance de Lait n'a rien d'un saint. Son cynisme est acéré, et si on l'agace ou qu'on attaque son physique, sa douceur feinte se fissure pour libérer un sarcasme mordant. Épicurien et profondément oisif, il utilise son charme indéniable pour s'éviter le froid et la boue des corvées, préférant régner en parrain tranquille sur le confort du camp. Fragile, paresseux et piquant — tout en restant le roc psychologique dont son clan a désespérément besoin.</p>
+  </div>
+
+  <div id="pop-gouts" data-title="Goûts">
+    <h4>L'art du soin et de l'élégance</h4>
+    <p>Il voue un culte tout particulier à son rituel de beauté. Être le plus beau possible, arborer une peau apaisée et exhaler un parfum délicat de menthe ou de lavande sauvage est pour lui une seconde nature — sa manière d'apporter de la splendeur dans la grisaille des marais.</p>
+    <h4>Conter le passé aux plus jeunes</h4>
+    <p>Il adore qu'on le sollicite pour raconter l'histoire des temps anciens. C'est le prétexte idéal pour s'installer confortablement au milieu des apprentis et des chatons, loin du tumulte du camp et, surtout, des corvées physiques qui l'ennuient tant.</p>
+    <h4>Le confort des antres chaleureux</h4>
+    <p>Durant les lunes les plus rudes, il cherche constamment à fuir le froid mordant. On le retrouve invariablement blotti dans la pouponnière auprès des reines, ou en train de trier calmement les remèdes dans l'antre d'Illusion du Puceron, toujours à l'abri et au chaud.</p>
+    <h4>Recueillir les confidences et conseiller</h4>
+    <p>Être le confident secret et le guide spirituel du clan est une véritable vocation. Il tire une grande fierté du fait que ses camarades viennent chercher sa sagesse ou épancher leur cœur auprès de lui.</p>
+  </div>
+
+  <div id="pop-degouts" data-title="Dégoûts">
+    <h4>La saleté et le désordre</h4>
+    <p>Il a une sainte horreur de la saleté sous toutes ses formes — boue, poussière, humidité — et ne supporte pas que l'on vienne ternir son pelage ou irriter sa peau si minutieusement entretenue.</p>
+    <h4>Le surmenage et les ordres</h4>
+    <p>Qu'on l'accable de directives ou de tâches ingrates a le don de l'exaspérer au plus haut point. Il estime que son temps est bien trop précieux pour être gâché par un labeur sans grâce.</p>
+    <h4>Les saisons extrêmes</h4>
+    <p>Il exècre les températures radicales : le soleil de la Saison des Feuilles Vertes menace sa peau nue, tandis que le froid polaire de la Mauvaise Saison est un danger mortel pour son système immunitaire fragile.</p>
+    <h4>Jouer les arbitres de tribunal</h4>
+    <p>Bien qu'il soit un diplomate hors pair, il refuse catégoriquement de se positionner en juge lors des querelles — il n'est là que pour apaiser les tensions, jamais pour désigner un vainqueur.</p>
+  </div>
+
+  <div id="pop-peurs" data-title="Peurs & phobies">
+    <h4>L'astre brûlant (le Soleil)</h4>
+    <p>Aussi surprenant que cela puisse paraître pour un chat du Clan de l'Ombre, Nuance de Lait craint le soleil. Conscient de la vulnérabilité de sa peau dénudée, il vit dans l'angoisse permanente des brûlures et des lésions que l'astre du jour pourrait lui infliger.</p>
+    <h4>Le spectre de la bête de foire</h4>
+    <p>Malgré sa superbe de façade, il reste profondément marqué par les moqueries de sa jeunesse et les vieilles superstitions des anciens. Il nourrit une peur viscérale du jugement d'autrui et de voir son apparence de « chat-loup » assimilée à celle d'une créature repoussante.</p>
+    <h4>La phobie de la contagion</h4>
+    <p>Dès qu'un cas de Mal Blanc ou de Mal Vert est déclaré dans le camp, Nuance de Lait s'évanouit dans la nature, refusant de s'approcher à moins de dix pas d'un félin fiévreux — préférant passer pour un lâche plutôt que de risquer sa propre vie.</p>
+  </div>
+
+  <div id="pop-habitudes" data-title="Habitudes & tics">
+    <h4>La routine « skincare » des marais</h4>
+    <p>Contre vents et marées, Nuance de Lait s'astreint à un rituel de soin quotidien : bave d'escargot, boue fraîche, argile protectrice, puis un frottement à la menthe aquatique ou aux aiguilles de pin pour un parfum toujours irréprochable.</p>
+    <h4>L'allure royale et aérienne</h4>
+    <p>Héritier d'une morphologie souple et flexible, il se déplace la tête haute, d'une démarche légère et chaloupée, glissant entre les racines comme s'il survolait la boue.</p>
+    <h4>Le limage minutieux des griffes</h4>
+    <p>Ses griffes anormalement longues peinent à se rétracter si elles ne sont pas entretenues. Il passe un temps infini à les limer contre les écorces les plus tendres, pour des pattes toujours impeccables.</p>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

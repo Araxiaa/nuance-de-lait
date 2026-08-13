@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relations — Nuance de Lait</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <svg class="sidebar__sprig" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M24 44C24 44 12 34 12 22C12 14 17 8 24 6C31 8 36 14 36 22C36 34 24 44 24 44Z" stroke="currentColor" stroke-width="1.6" fill="rgba(169,201,180,0.25)"/>
+        <path d="M24 6V38" stroke="currentColor" stroke-width="1.2"/>
+        <path d="M24 14C20 16 17 19 16 23" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        <path d="M24 22C28 24 31 27 32 31" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+      <div class="sidebar__name">Nuance<br>de Lait</div>
+      <div class="sidebar__clan">Clan de l'Ombre</div>
+    </div>
+
+    <nav class="sidebar__nav" aria-label="Navigation principale">
+      <a class="sidebar__link" href="index.html">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+        Accueil
+      </a>
+      <a class="sidebar__link" href="personnalite.html">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+        Personnalité
+      </a>
+      <a class="sidebar__link" href="physique.html">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3c-3 3-3 6 0 9s3 6 0 9"/><path d="M8 21h8"/></svg>
+        Physique
+      </a>
+      <a class="sidebar__link is-active" href="relations.html">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 8a4 4 0 10-7 2.6L12 12l-1-1.4A4 4 0 104 8c0 5 8 11 8 11s8-6 8-11z"/></svg>
+        Relations
+      </a>
+      <a class="sidebar__link" href="portfolio.html">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-4-4 3-3-2-5 4"/></svg>
+        Portfolio
+      </a>
+      <a class="sidebar__link" href="histoire.html">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h13a3 3 0 013 3v13H7a3 3 0 01-3-3V4z"/><path d="M8 8h8M8 12h8"/></svg>
+        Histoire
+      </a>
+    </nav>
+
+    <div class="sidebar__footer">
+      Le Prix de la Trêve<br>
+      OC &amp; crédits · .araxia.
+    </div>
+  </aside>
+
+  <!-- ================= CONTENU ================= -->
+  <main class="main">
+
+    <header class="page-header">
+      <p class="page-header__eyebrow">Lignée &amp; relations</p>
+      <h1 class="page-header__title">Une famille de cœur et de sang</h1>
+      <p class="page-header__intro">
+        Entre les liens du sang et ceux tissés au fil du roleplay, Nuance de Lait porte une lignée
+        aussi riche que douloureuse.
+      </p>
+    </header>
+
+    <div class="tabs" role="tablist">
+      <button class="tab-button is-active" data-tab-target="tab-famille" role="tab" aria-selected="true">Famille</button>
+      <button class="tab-button" data-tab-target="tab-rp" role="tab" aria-selected="false">Relations RP</button>
+    </div>
+
+    <!-- ========= ONGLET FAMILLE ========= -->
+    <div class="tab-panel is-active" id="tab-famille" role="tabpanel">
+
+      <section class="family-section">
+        <h2 class="family-section__title">Parents</h2>
+        <div class="person-grid">
+          <button class="person-card" data-popup-target="pop-serenite">
+            <span class="person-card__name">Sérénité de Clématite</span>
+            <span class="person-card__link">Père</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pnj">PNJ</span>
+              <span class="status-badge status-badge--dead">💀 Mort</span>
+            </span>
+          </button>
+          <button class="person-card" data-popup-target="pop-pic">
+            <span class="person-card__name">Pic Rocheux</span>
+            <span class="person-card__link">Mère</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pnj">PNJ</span>
+              <span class="status-badge status-badge--dead">💀 Morte</span>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <section class="family-section">
+        <h2 class="family-section__title">Fratrie</h2>
+        <div class="person-grid">
+          <button class="person-card" data-popup-target="pop-brume">
+            <span class="person-card__name">Brume de Sureau</span>
+            <span class="person-card__link">Sœur</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pnj">PNJ</span>
+              <span class="status-badge status-badge--alive">Vivante</span>
+            </span>
+          </button>
+          <button class="person-card" data-popup-target="pop-furet">
+            <span class="person-card__name">Pas de Furet</span>
+            <span class="person-card__link">Sœur</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pnj">PNJ</span>
+              <span class="status-badge status-badge--dead">💀 Morte</span>
+            </span>
+          </button>
+          <button class="person-card" data-popup-target="pop-girolle">
+            <span class="person-card__name">Cœur de Girolle</span>
+            <span class="person-card__link">Sœur</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pnj">PNJ</span>
+              <span class="status-badge status-badge--alive">Vivante</span>
+            </span>
+          </button>
+          <button class="person-card" data-popup-target="pop-corpin">
+            <span class="person-card__name">Griffe de Corpin</span>
+            <span class="person-card__link">Sœur</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pj">PJ</span>
+              <span class="status-badge status-badge--alive">Vivante</span>
+            </span>
+          </button>
+          <button class="person-card" data-popup-target="pop-morille">
+            <span class="person-card__name">Petite Morille</span>
+            <span class="person-card__link">Frère</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pnj">PNJ</span>
+              <span class="status-badge status-badge--dead">💀 Mort-né</span>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <section class="family-section">
+        <h2 class="family-section__title">Ex-compagnon(e)s</h2>
+        <div class="person-grid">
+          <button class="person-card" data-popup-target="pop-fierte">
+            <span class="person-card__name">Fierté de Ronce</span>
+            <span class="person-card__link">Ex-compagnon</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pnj">PNJ</span>
+              <span class="status-badge status-badge--dead">💀 Mort</span>
+            </span>
+          </button>
+          <button class="person-card" data-popup-target="pop-truffe">
+            <span class="person-card__name">Truffe Champêtre</span>
+            <span class="person-card__link">Ex-flirt</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pj">PJ</span>
+              <span class="status-badge status-badge--alive">Vivante</span>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <section class="family-section">
+        <h2 class="family-section__title">Descendance</h2>
+        <div class="person-grid">
+          <button class="person-card" data-popup-target="pop-grognement">
+            <span class="person-card__name">Grognement de l'Ours</span>
+            <span class="person-card__link">Fille</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pj">PJ</span>
+              <span class="status-badge status-badge--alive">Vivante</span>
+            </span>
+          </button>
+          <button class="person-card" data-popup-target="pop-roseau">
+            <span class="person-card__name">Tige de Roseau</span>
+            <span class="person-card__link">Fils</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pnj">PNJ</span>
+              <span class="status-badge status-badge--dead">💀 Mort</span>
+            </span>
+          </button>
+          <button class="person-card" data-popup-target="pop-nuage">
+            <span class="person-card__name">Nuage de Brume</span>
+            <span class="person-card__link">Fils</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pnj">PNJ</span>
+              <span class="status-badge status-badge--dead">💀 Mort</span>
+            </span>
+          </button>
+          <button class="person-card" data-popup-target="pop-patte">
+            <span class="person-card__name">Patte de Ruisseau</span>
+            <span class="person-card__link">Fille</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pj">PJ</span>
+              <span class="status-badge status-badge--dead">💀 Morte</span>
+            </span>
+          </button>
+          <button class="person-card" data-popup-target="pop-millepattes">
+            <span class="person-card__name">Petit Mille-Pattes</span>
+            <span class="person-card__link">Fils</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pj">PJ</span>
+              <span class="status-badge status-badge--alive">Vivant</span>
+            </span>
+          </button>
+          <button class="person-card" data-popup-target="pop-sauterelle">
+            <span class="person-card__name">Petite Sauterelle</span>
+            <span class="person-card__link">Fille</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pj">PJ</span>
+              <span class="status-badge status-badge--alive">Vivante</span>
+            </span>
+          </button>
+          <button class="person-card" data-popup-target="pop-merisier">
+            <span class="person-card__name">Petit Merisier</span>
+            <span class="person-card__link">Fils</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pnj">PNJ</span>
+              <span class="status-badge status-badge--dead">💀 Mort</span>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <section class="family-section">
+        <h2 class="family-section__title">Mentorat</h2>
+        <div class="person-grid">
+          <button class="person-card" data-popup-target="pop-mousse">
+            <span class="person-card__name">Cœur de Mousse</span>
+            <span class="person-card__link">Mentor</span>
+            <span class="person-card__badges">
+              <span class="status-badge status-badge--pnj">PNJ</span>
+              <span class="status-badge status-badge--dead">💀 Mort</span>
+            </span>
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ========= ONGLET RELATIONS RP ========= -->
+    <div class="tab-panel" id="tab-rp" role="tabpanel">
+
+      <div class="rp-legend" aria-label="Index d'appréciation">
+        <div class="rp-legend__item">
+          <svg viewBox="0 0 24 24" fill="#E8B4B8" stroke="#c98d92" stroke-width="1"><path d="M12 21s-7-4.6-9.5-9C.7 8.4 2.7 4 7 4c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 4.3 0 6.3 4.4 4.5 8-2.5 4.4-9.5 9-9.5 9z"/></svg>
+          Appréciation positive (1 à 3 cœurs)
+        </div>
+        <div class="rp-legend__item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#8a7d86" stroke-width="1.4"><path d="M12 21s-7-4.6-9.5-9C.7 8.4 2.7 4 7 4c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 4.3 0 6.3 4.4 4.5 8-2.5 4.4-9.5 9-9.5 9z"/></svg>
+          Aversion (1 à 3 cœurs gris)
+        </div>
+        <div class="rp-legend__item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#a594be" stroke-width="1.4"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-0.5z"/></svg>
+          Respect
+        </div>
+        <div class="rp-legend__item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#6E5C69" stroke-width="1.4"><circle cx="12" cy="11" r="7"/><path d="M9 11a3 3 0 016 0M9 19l1-3M15 19l-1-3"/></svg>
+          Décédé(e)
+        </div>
+      </div>
+
+      <div class="rp-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21C12 21 4 17 4 10C4 6 7.5 3 12 3C16.5 3 20 6 20 10C20 17 12 21 12 21Z"/><path d="M12 3V19"/></svg>
+        <p>À suivre au fil du roleplay</p>
+        <span>Les liens tissés avec d'autres personnages viendront s'ajouter ici, lune après lune.</span>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- ================= POPUP OVERLAY ================= -->
+<div class="popup-overlay" id="popup-overlay">
+  <div class="popup__panel" role="dialog" aria-modal="true">
+    <button class="popup__close" aria-label="Fermer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <h2 class="popup__title"></h2>
+    <div class="popup__body"></div>
+  </div>
+</div>
+
+<!-- ================= CONTENUS DES POPUPS (templates) ================= -->
+<div hidden>
+
+  <div id="pop-serenite" data-title="Sérénité de Clématite — Père">
+    <p>Il fut le modèle absolu de Nuance de Lait. Ce guerrier respecté, apprécié de tous et d'une sagesse légendaire, a profondément marqué son fils. Aujourd'hui encore, la reine de la pouponnière regrette amèrement de ne pas avoir partagé plus de saisons à ses côtés avant qu'il ne rejoigne le Clan des Étoiles.</p>
+  </div>
+
+  <div id="pop-pic" data-title="Pic Rocheux — Mère">
+    <p>Bien que son tempérament de feu ait été à l'opposé du flegme de son fils, Nuance de Lait l'aimait éperdument. Elle savait trouver les mots pour l'encourager, à sa manière brute et honnête. Son décès a laissé un vide immense, et il lui a fallu de nombreuses lunes pour accepter sa disparition.</p>
+  </div>
+
+  <div id="pop-brume" data-title="Brume de Sureau — Sœur">
+    <p>Sa confidente, sa moitié. Elle partage la même condition génétique que lui, arborant ce fameux physique de « chat-loup ». Leurs liens sont indéfectibles : après avoir été sa mère porteuse par amour fraternel, elle a rejoint les anciens tandis qu'il demeure à la pouponnière. Ils passent leurs journées à réinventer le monde et à observer le camp.</p>
+  </div>
+
+  <div id="pop-furet" data-title="Pas de Furet — Sœur">
+    <p>Son autre sœur de portée. Bien qu'ils aient été moins fusionnels, sa mort prématurée a agi comme un véritable traumatisme pour Nuance de Lait, le confrontant brutalement à la fragilité de la vie.</p>
+  </div>
+
+  <div id="pop-girolle" data-title="Cœur de Girolle — Sœur">
+    <p>Issue de la seconde portée de ses parents, elle est son éternel rayon de soleil. Nuance de Lait éprouve un amour profondément protecteur et couvant pour elle.</p>
+  </div>
+
+  <div id="pop-corpin" data-title="Griffe de Corpin — Sœur">
+    <p>Issue de la seconde portée de ses parents, elle est une féline avec un caractère plus affirmé. Lait et elle ont un peu de mal à s'entendre, mais il l'apprécie quand même.</p>
+  </div>
+
+  <div id="pop-morille" data-title="Petite Morille — Frère">
+    <p>Frère jumeau de Cœur de Girolle, tristement mort-né.</p>
+  </div>
+
+  <div id="pop-fierte" data-title="Fierté de Ronce — Ex-compagnon">
+    <p>L'antithèse de Nuance de Lait : un grand guerrier au pelage sombre et épais, robuste, ambitieux et débordant d'ego. Un mâle protecteur qui avait tout pour plaire. Leur amour passionné s'est brisé dans les larmes et les reproches. Il a succombé il y a 4 lunes à une infection survenue après le terrible affrontement contre les Dynastes.</p>
+  </div>
+
+  <div id="pop-truffe" data-title="Truffe Champêtre — Ex-flirt">
+    <p>Une splendide féline bicolore au pelage noir et mi-long. Amis d'enfance inséparables, ils ont cherché un réconfort charnel et désespéré dans les bras l'un de l'autre lors d'une période sombre. Aujourd'hui, elle est la fière meneuse du Clan de l'Ombre, et leur amitié reste l'un des piliers secrets de la vie de Nuance de Lait.</p>
+  </div>
+
+  <div id="pop-grognement" data-title="Grognement de l'Ours — Fille">
+    <p>Sa douce, sa fierté. Elle a hérité de son gène Lykoï, cette condition de « bête de foire » qu'ils portent comme une couronne. Arborant un pelage écaille de tortue diluée, elle ressemble de façon troublante à sa mère porteuse (et tante), Brume de Sureau.</p>
+  </div>
+
+  <div id="pop-roseau" data-title="Tige de Roseau — Fils">
+    <p>Un guerrier souple, altier et fier, qui faisait l'orgueil de ses pères. Il est tombé au combat lors d'une escarmouche sanglante il y a 15 lunes.</p>
+  </div>
+
+  <div id="pop-nuage" data-title="Nuage de Brume — Fils">
+    <p>Un petit mâle au pelage gris laiteux. Hélas, sa santé de cristal n'a pas résisté aux rigueurs d'une mauvaise saison particulièrement cruelle, emportant l'apprenti avant la fin de ses chasses.</p>
+  </div>
+
+  <div id="pop-patte" data-title="Patte de Ruisseau — Fille">
+    <p>Née de son aventure secrète avec Truffe Champêtre. Pour lui éviter l'enfer de la brume toxique qui ronge le territoire de l'Ombre, le couple a dû prendre la douloureuse décision de l'abandonner à la frontière du Tonnerre. Hélas, elle mourut là-bas.</p>
+  </div>
+
+  <div id="pop-millepattes" data-title="Petit Mille-Pattes — Fils">
+    <p>Son fils secret, déposé lui aussi à la frontière du Tonnerre aux côtés de sa sœur pour assurer sa survie loin des miasmes de l'Ombre. Il grandit désormais de l'autre côté des arbres, ignorant peut-être tout de ses origines.</p>
+  </div>
+
+  <div id="pop-sauterelle" data-title="Petite Sauterelle — Fille">
+    <p>Sa fille secrète, elle aussi déposée à la frontière avec le Clan du Tonnerre, aux côtés de sa sœur et de son frère. Elle grandit désormais de l'autre côté du chemin du Tonnerre, ignorant tout de ses origines.</p>
+  </div>
+
+  <div id="pop-merisier" data-title="Petit Merisier — Fils">
+    <p>Un petit chaton noir et blanc, mort à sa naissance.</p>
+  </div>
+
+  <div id="pop-mousse" data-title="Cœur de Mousse — Mentor">
+    <p>Son mentor fut Cœur de Mousse, il a toujours été doux et compréhensible avec lui. L'apprentissage fut parfait à ses côtés. Au lieu de durer six lunes, il dura huit afin que Nuance de Lait ait bien tout appris.</p>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
