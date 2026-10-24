@@ -4,29 +4,45 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Nuance de Lait — Reine du Clan de l'Ombre</title>
-  <meta name="description" content="Fiche de Nuance de Lait, reine du Clan de l'Ombre, lykoï crème aux yeux verts.">
+  <meta name="description" content="Nuance de Lait, reine du Clan de l'Ombre : fiche, relations, fils RP et galerie.">
+  <meta name="theme-color" content="#fbf1e0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <script>try{var t=localStorage.getItem("nl-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 </head>
 <body>
-  <header class="nav">
-    <a class="brand" href="#top">Nuance de Lait</a>
-    <button class="burger" aria-label="Menu" aria-expanded="false">☰</button>
-    <nav id="menu"></nav>
+  <div class="mist" aria-hidden="true"><i></i><i></i><i></i></div>
+  <canvas id="fx" aria-hidden="true"></canvas>
+  <div class="glow" aria-hidden="true"></div>
+
+  <header class="nav" id="nav">
+    <a class="brand" href="#/"><span class="brand-mark">✦</span> Nuance de Lait</a>
+    <nav id="menu" aria-label="Navigation principale"></nav>
+    <button class="icon-btn" id="theme" aria-label="Changer d'ambiance (jour / nuit)" title="Jour / Nuit">☾</button>
+    <button class="icon-btn burger" id="burger" aria-label="Menu" aria-expanded="false">☰</button>
   </header>
 
   <main id="app" aria-live="polite"><p class="loading">Chargement…</p></main>
 
   <footer>
+    <p class="foot-title">Nuance de Lait</p>
     <p>✦ Personnage créé par <span id="credits">.araxia.</span> · Clan de l'Ombre ✦</p>
     <p><a href="admin.html" class="admin-link">Espace admin</a></p>
   </footer>
 
+  <div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="Image agrandie">
+    <button class="lb-close" aria-label="Fermer">✕</button>
+    <button class="lb-nav prev" aria-label="Précédente">‹</button>
+    <figure><img alt=""><figcaption></figcaption></figure>
+    <button class="lb-nav next" aria-label="Suivante">›</button>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/content.js"></script>
+  <script src="js/fx.js"></script>
   <script src="js/site.js"></script>
 </body>
 </html>

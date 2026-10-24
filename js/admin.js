@@ -6,10 +6,26 @@
 
   const TABS = {
     identite: "Identité", noms: "Noms", caractere: "Caractère", gouts: "Goûts & peurs",
-    physique: "Physique", relations: "Relations", histoire: "Histoire", convictions: "Convictions",
+    physique: "Physique", histoire: "Histoire", convictions: "Convictions",
+    relations: "Relations", fils: "Fils RP", galerie: "Galerie",
   };
-  const LABELS = { pv: "PV", pa: "PA", nom: "Nom", texte: "Texte", titre: "Titre", lien: "Lien", statut: "Statut", etape: "Étape" };
+  const SELECTS = {
+    appreciation: [["pos1", "♥ Appréciation positive (1)"], ["pos2", "♥♥ Appréciation positive (2)"], ["pos3", "♥♥♥ Appréciation positive (3)"],
+      ["neg1", "🩶 Aversion (1)"], ["neg2", "🩶🩶 Aversion (2)"], ["neg3", "🩶🩶🩶 Aversion (3)"],
+      ["neutre", "♥🩶 Neutre"], ["respect", "★ Respect"], ["mort", "🕊 Décédé(e)"]],
+    type: [["PNJ", "PNJ"], ["PJ", "PJ (joueur·se)"]],
+    statut: [["En cours", "En cours"], ["Terminé", "Terminé"]],
+  };
+  const LABELS = { age: "Âge (lunes)", lunes: "Lunes de Nuance", lien: "Lien (Discord ou relation)", joueur: "Joueur·se (si PJ)",  pv: "PV", pa: "PA", nom: "Nom", texte: "Texte", titre: "Titre", lien: "Lien", statut: "Statut", etape: "Étape" };
   const label = (k) => LABELS[k] || (k.charAt(0).toUpperCase() + k.slice(1).replace(/_/g, " "));
+
+  const PHASE = { age: 0, appreciation: "neutre", description: "" };
+  const SAMPLES = {
+    phases: PHASE,
+    fils: { titre: "", lien: "", participants: [], lunes: 0, description: "", statut: "En cours" },
+    galerie: { titre: "", image: "", description: "" },
+    relations: { nom: "", lien: "", clan: "Clan de l'Ombre", rang: "", type: "PNJ", joueur: "", image: "", phases: [PHASE] },
+  };
 
   let state = null;
   let tab = "identite";
@@ -64,7 +80,7 @@
   function blank(v) {
     if (typeof v === "string") return "";
     if (typeof v === "number") return 0;
-    if (Array.isArray(v)) return [];
+    if (Array.isArray(v)) return v.length && typeof v[0] === "object" ? [blank(v[0])] : [];
     return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, blank(x)]));
   }
 
@@ -74,12 +90,17 @@
     wrap.className = "field";
     const cap = document.createElement("span"); cap.textContent = Array.isArray(obj) ? "Texte" : label(key); wrap.append(cap);
     const long = typeof v === "string" && (v.length > 70 || Array.isArray(obj) || /texte|intro|citation|description/.test(key));
-    const input = document.createElement(long ? "textarea" : "input");
+    const opts = SELECTS[key];
+    const input = document.createElement(opts ? "select" : long ? "textarea" : "input");
+    if (opts) {
+      const list = opts.some((o) => o[0] === v) || !v ? opts : [[v, v], ...opts];
+      input.innerHTML = '<option value="">—</option>' + list.map((o) => `<option value="${o[0].replace(/"/g, "&quot;")}">${o[1]}</option>`).join("");
+    }
     if (typeof v === "number") input.type = "number";
     input.value = v;
-    input.oninput = () => { obj[key] = typeof v === "number" ? Number(input.value) : input.value; onChange && onChange(); };
+    input.oninput = input.onchange = () => { obj[key] = typeof v === "number" ? Number(input.value) : input.value; onChange && onChange(); };
     wrap.append(input);
-    if (key === "image") {
+    if (key === "image") { // envoi vers le bucket Storage "nuance"
       const up = document.createElement("input"); up.type = "file"; up.accept = "image/*"; up.style.marginTop = "6px";
       up.onchange = async () => {
         const f = up.files[0]; if (!f) return;
@@ -110,7 +131,7 @@
     const arr = parent[key];
     const fs = document.createElement("fieldset");
     const lg = document.createElement("legend"); lg.textContent = title || label(key); fs.append(lg);
-    const sample = arr.length && typeof arr[0] === "object" ? blank(arr[0]) : "";
+    const sample = arr.length && typeof arr[0] === "object" ? blank(arr[0]) : (SAMPLES[key] ? clone(SAMPLES[key]) : "");
 
     const redraw = () => { const n = list(parent, key, title); fs.replaceWith(n); };
     arr.forEach((item, i) => {
