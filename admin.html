@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Dashboard — Nuance de Lait</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin">
+  <section id="login" class="login" hidden>
+    <div class="login-card">
+      <h1>Dashboard</h1>
+      <p>Espace réservé à la gestion du site de <em>Nuance de Lait</em>.</p>
+      <button id="btn-login" class="btn primary">Se connecter avec Discord</button>
+      <p id="login-msg" class="msg"></p>
+      <p><a href="index.html">← Retour au site</a></p>
+    </div>
+  </section>
+
+  <div id="dash" hidden>
+    <header class="bar-top">
+      <strong class="brand">Dashboard</strong>
+      <span id="who" class="who"></span>
+      <span class="spacer"></span>
+      <a class="btn" href="index.html" target="_blank" rel="noopener">Voir le site ↗</a>
+      <button id="btn-export" class="btn">Exporter JSON</button>
+      <button id="btn-reset" class="btn">Valeurs par défaut</button>
+      <button id="btn-save" class="btn primary">Enregistrer</button>
+      <button id="btn-logout" class="btn">Déconnexion</button>
+    </header>
+    <div class="layout">
+      <nav id="tabs" class="tabs"></nav>
+      <main id="editor" class="editor"></main>
+    </div>
+    <div id="toast" class="toast" role="status"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/content.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
