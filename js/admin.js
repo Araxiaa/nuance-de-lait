@@ -7,16 +7,17 @@
   const TABS = {
     identite: "Identité", noms: "Noms", caractere: "Caractère", gouts: "Goûts & peurs",
     physique: "Physique", histoire: "Histoire", convictions: "Convictions",
-    relations: "Relations", fils: "Fils RP", galerie: "Galerie",
+    relations: "Relations", fils: "Fils RP", galerie: "Galerie", purgatoire: "Purgatoire",
   };
   const SELECTS = {
     appreciation: [["pos1", "♥ Appréciation positive (1)"], ["pos2", "♥♥ Appréciation positive (2)"], ["pos3", "♥♥♥ Appréciation positive (3)"],
       ["neg1", "🩶 Aversion (1)"], ["neg2", "🩶🩶 Aversion (2)"], ["neg3", "🩶🩶🩶 Aversion (3)"],
       ["neutre", "♥🩶 Neutre"], ["respect", "★ Respect"], ["mort", "🕊 Décédé(e)"]],
+    groupe: [["famille", "Famille"], ["autres", "Autres relations"]],
     type: [["PNJ", "PNJ"], ["PJ", "PJ (joueur·se)"]],
     statut: [["En cours", "En cours"], ["Terminé", "Terminé"]],
   };
-  const LABELS = { age: "Âge (lunes)", lunes: "Lunes de Nuance", lien: "Lien (Discord ou relation)", joueur: "Joueur·se (si PJ)",  pv: "PV", pa: "PA", nom: "Nom", texte: "Texte", titre: "Titre", lien: "Lien", statut: "Statut", etape: "Étape" };
+  const LABELS = { coche: "Case cochée", libelle: "Libellé", detail: "Précision", points: "Points", seuil: "Seuil (Forêt Sombre au-dessus)", actif: "OC décédé(e) (active la page Purgatoire)", groupe: "Groupe", applicable: "Applicable", justification: "Justification", statut: "Statut", pv_max: "PV max", pa_max: "PA max", age: "Âge (lunes)", lunes: "Lunes de Nuance", lien: "Lien (Discord ou relation)", joueur: "Joueur·se (si PJ)",  pv: "PV", pa: "PA", nom: "Nom", texte: "Texte", titre: "Titre", lien: "Lien", statut: "Statut", etape: "Étape" };
   const label = (k) => LABELS[k] || (k.charAt(0).toUpperCase() + k.slice(1).replace(/_/g, " "));
 
   const PHASE = { age: 0, appreciation: "neutre", description: "" };
@@ -59,7 +60,12 @@
   /* ---------- données ---------- */
   async function load() {
     const { data } = await sb.from("site_content").select("data").eq("id", C.CONTENT_ID).maybeSingle();
-    state = Object.assign(clone(window.DEFAULT_CONTENT), data?.data || {});
+    state = clone(window.DEFAULT_CONTENT);
+    const saved = data?.data || {};
+    for (const k of Object.keys(saved)) {
+      if (Array.isArray(state[k]) !== Array.isArray(saved[k])) continue;
+      state[k] = !Array.isArray(saved[k]) && saved[k] && typeof saved[k] === "object" ? { ...state[k], ...saved[k] } : saved[k];
+    }
     render();
   }
   $("btn-save").onclick = async () => {
@@ -80,6 +86,7 @@
   function blank(v) {
     if (typeof v === "string") return "";
     if (typeof v === "number") return 0;
+    if (typeof v === "boolean") return false;
     if (Array.isArray(v)) return v.length && typeof v[0] === "object" ? [blank(v[0])] : [];
     return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, blank(x)]));
   }
@@ -89,6 +96,12 @@
     const wrap = document.createElement("label");
     wrap.className = "field";
     const cap = document.createElement("span"); cap.textContent = Array.isArray(obj) ? "Texte" : label(key); wrap.append(cap);
+    if (typeof v === "boolean") {
+      wrap.className = "field check"; cap.textContent = label(key);
+      const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = v;
+      cb.onchange = () => { obj[key] = cb.checked; onChange && onChange(); };
+      wrap.prepend(cb); return wrap;
+    }
     const long = typeof v === "string" && (v.length > 70 || Array.isArray(obj) || /texte|intro|citation|description/.test(key));
     const opts = SELECTS[key];
     const input = document.createElement(opts ? "select" : long ? "textarea" : "input");

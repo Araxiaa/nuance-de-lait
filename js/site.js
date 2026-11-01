@@ -23,7 +23,7 @@
         for (const k of Object.keys(saved)) {
           // anciennes données : relations était un objet, c'est maintenant une liste
           if (isArr(base[k]) !== isArr(saved[k])) continue;
-          base[k] = saved[k];
+          base[k] = !isArr(saved[k]) && saved[k] && typeof saved[k] === "object" ? { ...base[k], ...saved[k] } : saved[k];
         }
       }
     } catch (e) { /* hors-ligne ou table absente : contenu par défaut */ }
@@ -66,8 +66,10 @@
   };
 
   /* ---------- pages ---------- */
+  const pct = (v, max) => Math.max(0, Math.min(100, (Number(v) / Number(max)) * 100));
   function pageHome() {
     const i = D.identite;
+    const P = D.purgatoire, dead = P && P.actif, verdict = dead ? purgCalc() : null;
     let n0 = 0;
     const letters = i.nom.split(" ").map((w) => `<span class="w">${[...w].map((c) => `<span class="ch" style="--n:${n0++}">${esc(c)}</span>`).join("")}</span>`).join('<span class="sp"> </span>');
     const traits = [...(D.caractere.qualites || []), ...(D.caractere.defauts || [])].map((t) => t.titre);
@@ -78,12 +80,14 @@
       ["#/relations", "Relations", "Famille, amis, rivaux : l'évolution de chaque lien au fil des lunes.", "♥", `${D.relations.length} liens`],
       ["#/fils", "Fils RP", "Tous les fils role-play, en cours ou terminés.", "✎", `${D.fils.length} fils`],
       ["#/galerie", "Galerie", "Illustrations et images de Nuance de Lait.", "❀", `${D.galerie.length} images`],
+      ...(dead ? [["#/purgatoire", "Le Purgatoire", "Le formulaire d'évaluation de l'âme : Clan des Étoiles ou Forêt Sombre ?", "✨", verdict.etoiles ? "Verdict : Clan des Étoiles" : "Verdict : Forêt Sombre"]] : []),
     ];
     return `
     <section class="hero">
       <div class="wrap hero-grid">
         <div class="hero-text">
           <span class="kicker rv">Clan de l'Ombre · ${esc(i.rang.split("—")[0].trim())}</span>
+          ${dead ? `<a class="rip rv" href="#/purgatoire">🕊 Décédé à ${esc(P.infos.age)} lunes · ${verdict.etoiles ? "Rejoint le Clan des Étoiles ✨" : "Condamné à la Forêt Sombre 🌑"}</a>` : ""}
           <h1 class="big" aria-label="${esc(i.nom)}">${letters}</h1>
           <p class="sub rv" style="--i:3">${esc(i.sous_titre)}</p>
           ${quote(i.citation)}
@@ -92,8 +96,8 @@
             <a class="btn ghost" href="#/relations">Ses relations</a>
           </div>
           <div class="stats">
-            <div class="stat"><span>PV</span><div class="bar"><i style="--w:${Math.min(100, Number(i.pv))}%"></i></div><b data-count="${Number(i.pv) || 0}">0</b></div>
-            <div class="stat pa"><span>PA</span><div class="bar"><i style="--w:${Math.min(100, Number(i.pa) * 10)}%"></i></div><b data-count="${Number(i.pa) || 0}">0</b></div>
+            <div class="stat"><span>PV</span><div class="bar"><i style="--w:${pct(i.pv, i.pv_max || 50)}%"></i></div><b><span data-count="${Number(i.pv) || 0}">0</span>/${esc(i.pv_max || 50)}</b></div>
+            <div class="stat pa"><span>PA</span><div class="bar"><i style="--w:${pct(i.pa, i.pa_max || 5)}%"></i></div><b><span data-count="${Number(i.pa) || 0}">0</span>/${esc(i.pa_max || 5)}</b></div>
           </div>
         </div>
         <figure class="portrait" aria-hidden="false">
@@ -115,7 +119,7 @@
     </section>
 
     <section id="portals" class="wrap portals">
-      ${portals.map((p, n) => `<a class="portal tilt rv" style="--i:${n}" href="${p[0]}"><span class="p-ico">${p[3]}</span><h2>${p[1]}</h2><p>${p[2]}</p>${p[4] ? `<em>${p[4]}</em>` : ""}<span class="arrow">→</span></a>`).join("")}
+      ${portals.map((p, n) => `<a class="portal tilt rv ${p[0] === "#/purgatoire" ? "wide" : ""}" style="--i:${n}" href="${p[0]}"><span class="p-ico">${p[3]}</span><h2>${p[1]}</h2><p>${p[2]}</p>${p[4] ? `<em>${p[4]}</em>` : ""}<span class="arrow">→</span></a>`).join("")}
     </section>
 
     <section class="wrap manifesto">
@@ -132,7 +136,7 @@
     const tabs = `<nav class="tabs rv" aria-label="Sous-pages">${SUBS.map((s) => `<a href="#/personnage/${s[0]}" class="${s[0] === sub ? "on" : ""}">${s[1]}</a>`).join("")}</nav>`;
     let body = "";
     if (sub === "apercu") {
-      const facts = [["Lunes", i.lunes], ["Clan", i.clan], ["Sexe", i.sexe], ["Orientation", i.orientation], ["Taille", i.taille], ["Poids", i.poids], ["Rang", i.rang], ["Joueur·se", i.pseudo_joueur]].filter((f) => f[1]);
+      const facts = [["Statut", i.statut], ["Cause du décès", i.cause_deces], ["Lunes", i.lunes], ["Clan", i.clan], ["Sexe", i.sexe], ["Orientation", i.orientation], ["Taille", i.taille], ["Poids", i.poids], ["Rang", i.rang], ["Joueur·se", i.pseudo_joueur]].filter((f) => f[1]);
       body = `<dl class="facts">${facts.map((f, n) => `<div class="tilt rv" style="--i:${n}"><dt>${esc(f[0])}</dt><dd>${esc(f[1])}</dd></div>`).join("")}</dl>
         ${subh("Nomenclature")}
         <ol class="names">${(D.noms || []).map((n, k) => `<li class="tilt rv" style="--i:${k}"><span class="step">${esc(n.etape)}</span><strong>${esc(n.nom)}</strong>${n.texte ? `<p>${esc(n.texte)}</p>` : ""}</li>`).join("")}</ol>`;
@@ -160,48 +164,101 @@
 
   /* --- relations --- */
   const relState = { q: "", clan: "", type: "", grp: "" };
-  const LEGEND = [["pos3", "Appréciation positive", "♥ · ♥♥ · ♥♥♥"], ["neg3", "Aversion", "🩶 · 🩶🩶 · 🩶🩶🩶"], ["neutre", "Neutre", ""], ["respect", "Respect", ""], ["mort", "Décédé(e)", ""]];
+  const LEGEND = [["pos3", "Appréciation positive", ""], ["neg3", "Aversion", ""], ["neutre", "Neutre", ""], ["respect", "Respect", ""], ["mort", "Décédé(e)", ""]];
+  const RSUBS = [["apercu", "Vue d'ensemble"], ["famille", "Famille"], ["autres", "Autres relations"]];
+  const isFam = (r) => r.groupe === "famille";
+  const rlink = (r) => `#/relations/r/${slug(r.nom)}`;
+  const legend = () => `<div class="legend rv">${LEGEND.map((l) => `<span class="lg">${APP[l[0]].html}<em>${l[1]}</em></span>`).join("")}</div>`;
 
   function relCard(r, n) {
     const l = latest(r);
-    return `<a class="rel tilt rv" style="--i:${n % 8}" href="#/relations/${slug(r.nom)}">
+    return `<a class="rel tilt rv" style="--i:${n % 8}" href="${rlink(r)}">
       ${avatar(r)}<div class="rel-body"><h3>${esc(r.nom)}</h3>
       <p class="muted">${esc(r.lien)}${r.clan ? " · " + esc(r.clan) : ""}</p>
       <div class="rel-foot">${apprBadge(l.appreciation)}<span class="tag ${r.type === "PJ" ? "pj" : ""}">${esc(r.type || "PNJ")}</span>${r.rang ? `<span class="tag soft">${esc(r.rang)}</span>` : ""}</div></div></a>`;
   }
-  function relFiltered() {
+  function relFiltered(fam) {
     const q = relState.q.trim().toLowerCase();
     return D.relations.filter((r) => {
+      if (isFam(r) !== fam) return false;
       if (relState.clan && r.clan !== relState.clan) return false;
       if (relState.type && (r.type || "PNJ") !== relState.type) return false;
       if (relState.grp && appr(latest(r).appreciation).g !== relState.grp) return false;
       return !q || [r.nom, r.lien, r.clan, r.rang, r.joueur].join(" ").toLowerCase().includes(q);
     });
   }
-  function pageRelations() {
-    const clans = [...new Set(D.relations.map((r) => r.clan).filter(Boolean))];
+
+  /* frise des relations : une ligne par relation, une colonne par tranche de 6 lunes */
+  const STEP = 6;
+  const lifeMax = () => Math.max(parseInt(D.identite.age_deces) || 0, parseInt(D.identite.lunes) || 0, ...D.relations.flatMap((r) => (r.phases || []).map((p) => Number(p.age) || 0)));
+  function matrix(list) {
+    if (!list.length) return empty("Aucune relation dans cette catégorie.");
+    const cols = Math.ceil((lifeMax() + 1) / STEP);
+    const sorted = [...list].sort((a, b) => (Number(phasesOf(a)[0]?.age) || 0) - (Number(phasesOf(b)[0]?.age) || 0));
+    const head = `<div class="mx-head" style="--cols:${cols}"><span></span>${Array.from({ length: cols }, (_, c) => `<span>${c % 2 === 0 ? c * STEP : ""}</span>`).join("")}</div>`;
+    const rows = sorted.map((r, n) => {
+      const ph = phasesOf(r);
+      const cells = Array.from({ length: cols }, (_, c) => {
+        const lo = c * STEP, hi = lo + STEP - 1;
+        const act = [...ph].reverse().find((p) => (Number(p.age) || 0) <= hi);
+        if (!act) return '<i class="mx-cell none"></i>';
+        const a = appr(act.appreciation);
+        const first = ph.some((p) => (Number(p.age) || 0) >= lo && (Number(p.age) || 0) <= hi && p.appreciation === act.appreciation);
+        const mark = a.g === "mort" && first ? "🕊" : a.g === "respect" && first ? "★" : "";
+        return `<i class="mx-cell g-${a.g} n-${Math.abs(a.n || 0)}" title="${esc(r.nom)} — ${esc(lo)}-${esc(hi)} lunes : ${esc(a.label)}">${mark}</i>`;
+      }).join("");
+      return `<a class="mx-row rv" style="--cols:${cols};--i:${n % 8}" href="${rlink(r)}"><span class="mx-name">${esc(r.nom)}<small>${esc(r.lien)}</small></span>${cells}</a>`;
+    }).join("");
+    return `<div class="mx-wrap"><div class="mx">${head}${rows}</div></div><p class="muted mx-axis">Âge de Nuance de Lait en lunes → chaque case est une tranche de ${STEP} lunes.</p>`;
+  }
+  function summary() {
+    const count = (fam) => {
+      const o = { pos: 0, neg: 0, neutre: 0, respect: 0, mort: 0 };
+      D.relations.filter((r) => isFam(r) === fam).forEach((r) => o[appr(latest(r).appreciation).g]++);
+      return o;
+    };
+    const names = { pos: "Positive", neg: "Aversion", neutre: "Neutre", respect: "Respect", mort: "Décédé(e)" };
+    const bar = (title, o) => {
+      const tot = Object.values(o).reduce((a, b) => a + b, 0) || 1;
+      return `<div class="sum rv"><h3>${title} <em>${tot === 1 && !Object.values(o).some(Boolean) ? 0 : Object.values(o).reduce((a, b) => a + b, 0)}</em></h3>
+        <div class="stack">${Object.keys(o).filter((k) => o[k]).map((k) => `<span class="seg g-${k}" style="flex:${o[k]}" title="${names[k]} : ${o[k]}">${o[k]}</span>`).join("")}</div>
+        <div class="stack-leg">${Object.keys(o).filter((k) => o[k]).map((k) => `<span><i class="dotc g-${k}"></i>${names[k]} ${o[k]}</span>`).join("")}</div></div>`;
+    };
+    return `<div class="sums">${bar("Famille", count(true))}${bar("Autres relations", count(false))}</div>`;
+  }
+
+  function pageRelations(sub) {
+    sub = RSUBS.some((s) => s[0] === sub) ? sub : "apercu";
+    const tabs = `<nav class="tabs rv">${RSUBS.map((s) => `<a href="#/relations/${s[0]}" class="${s[0] === sub ? "on" : ""}">${s[1]}</a>`).join("")}</nav>`;
+    const head = title("Ceux qui comptent", "Relations", "Chaque lien est daté : l'appréciation évolue avec les lunes.");
+    if (sub === "apercu") {
+      return `<section class="wrap page">${head}${tabs}${legend()}${summary()}
+        ${subh("Famille")}${matrix(D.relations.filter(isFam))}
+        ${subh("Autres relations")}${matrix(D.relations.filter((r) => !isFam(r)))}</section>`;
+    }
+    const pool = D.relations.filter((r) => isFam(r) === (sub === "famille"));
+    const clans = [...new Set(pool.map((r) => r.clan).filter(Boolean))];
     const sel = (id, opts, cur, all) => `<select id="${id}" aria-label="${all}"><option value="">${all}</option>${opts.map((o) => `<option value="${esc(o[0])}" ${o[0] === cur ? "selected" : ""}>${esc(o[1])}</option>`).join("")}</select>`;
-    return `<section class="wrap page">${title("Ceux qui comptent", "Relations", "Chaque lien est daté : l'appréciation évolue avec les lunes.")}
-      <div class="legend rv">${LEGEND.map((l) => `<span class="lg">${APP[l[0]].html}<em>${l[1]}</em></span>`).join("")}</div>
+    return `<section class="wrap page">${head}${tabs}${legend()}
       <div class="filters rv">
         <input id="rq" type="search" placeholder="Rechercher un nom, un clan, un rang…" value="${esc(relState.q)}">
         ${sel("rc", clans.map((c) => [c, c]), relState.clan, "Tous les clans")}
         ${sel("rt", [["PNJ", "PNJ"], ["PJ", "PJ (joueur·se)"]], relState.type, "PNJ & PJ")}
         ${sel("rg", [["pos", "Appréciation positive"], ["neg", "Aversion"], ["neutre", "Neutre"], ["respect", "Respect"], ["mort", "Décédé(e)s"]], relState.grp, "Toutes appréciations")}
-      </div>
-      <div id="rel-list"></div></section>`;
+      </div><div id="rel-list"></div></section>`;
   }
-  function fillRelList() {
-    const list = relFiltered();
-    $("#rel-list").innerHTML = list.length ? `<div class="grid rels">${list.map(relCard).join("")}</div>` : empty("Aucune relation ne correspond à ces filtres.");
-    FX.observe($("#rel-list"));
-  }
-  function bindRelations() {
-    $("#rq").oninput = (e) => { relState.q = e.target.value; fillRelList(); };
-    $("#rc").onchange = (e) => { relState.clan = e.target.value; fillRelList(); };
-    $("#rt").onchange = (e) => { relState.type = e.target.value; fillRelList(); };
-    $("#rg").onchange = (e) => { relState.grp = e.target.value; fillRelList(); };
-    fillRelList();
+  function bindRelations(sub) {
+    const fam = sub === "famille";
+    const fill = () => {
+      const list = relFiltered(fam);
+      $("#rel-list").innerHTML = list.length ? `<div class="grid rels">${list.map(relCard).join("")}</div>` : empty("Aucune relation ne correspond à ces filtres.");
+      FX.observe($("#rel-list"));
+    };
+    $("#rq").oninput = (e) => { relState.q = e.target.value; fill(); };
+    $("#rc").onchange = (e) => { relState.clan = e.target.value; fill(); };
+    $("#rt").onchange = (e) => { relState.type = e.target.value; fill(); };
+    $("#rg").onchange = (e) => { relState.grp = e.target.value; fill(); };
+    fill();
   }
 
   function graph(ph) {
@@ -211,7 +268,7 @@
     const X = (a) => 40 + ((a - a0) / (a1 - a0 || 1)) * 520, Y = (n) => 90 - n * 26;
     const d = pts.map((p, i) => `${i ? "L" : "M"}${X(Number(p.age) || 0)},${Y(appr(p.appreciation).n)}`).join(" ");
     return `<svg class="graph rv" viewBox="0 0 600 180" role="img" aria-label="Évolution de l'appréciation">
-      <line x1="30" x2="580" y1="90" y2="90" class="axis"/><text x="6" y="30" class="lab">♥</text><text x="6" y="160" class="lab">🩶</text>
+      <line x1="30" x2="580" y1="90" y2="90" class="axis"/><text x="6" y="30" class="lab">♥</text><text x="6" y="160" class="lab">♥</text>
       <path d="${d}" class="curve"/>
       ${pts.map((p) => `<g><circle cx="${X(Number(p.age) || 0)}" cy="${Y(appr(p.appreciation).n)}" r="6" class="pt"/><text x="${X(Number(p.age) || 0)}" y="${Y(appr(p.appreciation).n) + (appr(p.appreciation).n >= 0 ? -14 : 24)}" text-anchor="middle" class="lab">${esc(p.age)} l.</text></g>`).join("")}
     </svg>`;
@@ -221,7 +278,7 @@
     if (!r) return `<section class="wrap page">${title("Relations", "Introuvable")}<p><a class="btn" href="#/relations">← Toutes les relations</a></p></section>`;
     const ph = phasesOf(r), l = latest(r);
     return `<section class="wrap page">
-      <a class="back rv" href="#/relations">← Toutes les relations</a>
+      <a class="back rv" href="#/relations/${isFam(r) ? "famille" : "autres"}">← ${isFam(r) ? "Famille" : "Autres relations"}</a>
       <header class="rel-hero rv">${avatar(r, "xl")}
         <div><span class="kicker">${esc(r.lien)}</span><h1>${esc(r.nom)}</h1>
         <div class="rel-foot">${apprBadge(l.appreciation)}<span class="muted">${esc(appr(l.appreciation).label)}</span></div>
@@ -230,6 +287,50 @@
       ${subh("Évolution du lien")}${graph(ph)}
       <ol class="timeline phases">${ph.map((p) => `<li class="rv"><span class="dot age">${esc(p.age)}<small>lunes</small></span>
         <div class="phase tilt"><div class="phase-top">${apprBadge(p.appreciation)}<span class="muted">${esc(appr(p.appreciation).label)}</span></div><p>${esc(p.description)}</p></div></li>`).join("")}</ol>
+    </section>`;
+  }
+
+  /* --- purgatoire --- */
+  function purgCalc() {
+    const P = D.purgatoire; let neg = 0, pos = 0;
+    const add = (n) => { n = Number(n) || 0; if (n >= 0) neg += n; else pos += n; };
+    const sec = (s) => [...(s.negatifs || []), ...(s.positifs || [])].reduce((a, it) => a + (it.coche ? Number(it.points) || 0 : 0), 0);
+    (P.sections || []).forEach((s) => [...(s.negatifs || []), ...(s.positifs || [])].forEach((it) => it.coche && add(it.points)));
+    ["bonne", "mauvaise"].forEach((k) => { const x = (P.staff || {})[k]; if (x && x.applicable) add(x.points); });
+    const total = neg + pos, seuil = Number(P.seuil) || 15;
+    return { neg, pos, total, seuil, etoiles: total <= seuil, sec };
+  }
+  const sgn = (n) => (n > 0 ? "+" + n : String(n));
+  function pagePurgatoire() {
+    const P = D.purgatoire, c = purgCalc(), i = P.infos || {};
+    const lo = Math.min(-30, c.total - 10), hi = Math.max(30, c.total + 10), pct = (v) => ((v - lo) / (hi - lo)) * 100;
+    const info = [["Nom", i.nom], ["Joueur·se", i.joueur], ["Clan / Groupe", i.clan], ["Rang au décès", i.rang], ["Cause du décès", i.cause], ["Âge au décès", i.age + " lunes"]];
+    const items = (arr) => (arr || []).map((it) => `<li class="${it.coche ? "on" : ""}"><span class="box">${it.coche ? "✔" : ""}</span><span class="lbl"><b>${esc(it.libelle)}</b><small>${esc(it.detail)}</small></span><span class="pts">${sgn(Number(it.points) || 0)}</span></li>`).join("");
+    const sections = (P.sections || []).map((s, n) => `
+      <article class="purg-sec tilt rv" style="--i:${n % 4}">
+        <header><h3>${esc(s.icone)} ${esc(["I", "II", "III", "IV", "V"][n])}. ${esc(s.titre)}</h3><span class="sec-total ${c.sec(s) <= 0 ? "good" : "bad"}">${sgn(c.sec(s))} pts</span></header>
+        <div class="two"><div><h4>Points négatifs</h4><ul class="checks">${items(s.negatifs)}</ul></div><div><h4>Points positifs</h4><ul class="checks pos">${items(s.positifs)}</ul></div></div>
+      </article>`).join("");
+    const st = P.staff || {};
+    const staff = (k, t) => `<div class="card rv"><h3>${t}</h3><p>${st[k] && st[k].applicable ? "✔ Applicable" : "☐ Non applicable"} · ${sgn(Number((st[k] || {}).points) || 0)} pts</p>${st[k] && st[k].justification ? `<p>${esc(st[k].justification)}</p>` : ""}</div>`;
+    return `<section class="wrap page purg">${title("Après la vie", "Le Purgatoire", "Évaluation de l'âme de Nuance de Lait par le staff.")}
+      <div class="verdict ${c.etoiles ? "stars" : "dark"} rv">
+        <div class="v-ico">${c.etoiles ? "✨" : "🌑"}</div>
+        <div><span class="kicker">Destination finale</span><h2>${c.etoiles ? "Le Clan des Étoiles" : "La Forêt Sombre"}</h2><p>${c.etoiles ? "L'âme est méritante." : "L'âme est corrompue."}</p></div>
+        <div class="v-score"><b data-count="${Math.abs(c.total)}">0</b><span>${c.total < 0 ? "−" : ""}score final</span></div>
+      </div>
+      <div class="gauge rv" style="--pos:${pct(c.total).toFixed(1)}%;--thr:${pct(c.seuil).toFixed(1)}%">
+        <div class="g-track"><span class="g-thr"><em>seuil ${c.seuil}</em></span><span class="mk"><i>${c.total}</i></span></div>
+        <div class="g-lab"><span>✨ Clan des Étoiles</span><span>🌑 Forêt Sombre</span></div>
+      </div>
+      ${subh("Informations de l'OC")}
+      <dl class="facts">${info.map((f, n) => `<div class="rv" style="--i:${n}"><dt>${esc(f[0])}</dt><dd>${esc(f[1])}</dd></div>`).join("")}</dl>
+      ${subh("Barème détaillé")}<div class="purg-grid">${sections}</div>
+      ${subh("V. Note staff")}<div class="grid">${staff("bonne", "Bonne cause non listée")}${staff("mauvaise", "Mauvaise cause non listée")}</div>
+      ${subh("Calcul final")}
+      <div class="calc rv"><div><span>Points négatifs</span><b>${sgn(c.neg)}</b></div><div><span>Points positifs</span><b>${sgn(c.pos)}</b></div><div class="res"><span>Score final</span><b>${sgn(c.total)}</b></div></div>
+      <div class="dest rv"><div class="${!c.etoiles ? "on" : ""}">🌑 Score &gt; ${c.seuil}<br><b>La Forêt Sombre</b><small>L'âme est corrompue.</small></div>
+      <div class="${c.etoiles ? "on" : ""}">✨ Score ≤ ${c.seuil}<br><b>Le Clan des Étoiles</b><small>L'âme est méritante.</small></div></div>
     </section>`;
   }
 
@@ -278,12 +379,14 @@
 
   /* ---------- routeur ---------- */
   const NAV = [["", "Accueil"], ["personnage", "Personnage"], ["relations", "Relations"], ["fils", "Fils RP"], ["galerie", "Galerie"]];
+  const navItems = () => (D && D.purgatoire && D.purgatoire.actif ? [...NAV, ["purgatoire", "Purgatoire"]] : NAV);
   function buildNav() {
-    $("#menu").innerHTML = NAV.map((n) => `<a href="#/${n[0]}" data-r="${n[0]}">${n[1]}</a>`).join("") + '<span class="pill"></span>';
+    $("#menu").innerHTML = navItems().map((n) => `<a href="#/${n[0]}" data-r="${n[0]}">${n[1]}</a>`).join("") + '<span class="pill"></span>';
   }
   function markNav(r) {
     document.querySelectorAll("#menu a").forEach((a) => a.classList.toggle("on", a.dataset.r === r));
     const on = $("#menu a.on"), pill = $("#menu .pill");
+    if (!pill) return;
     if (on) { pill.style.width = on.offsetWidth + "px"; pill.style.transform = `translateX(${on.offsetLeft}px)`; pill.style.opacity = 1; } else pill.style.opacity = 0;
   }
 
@@ -294,7 +397,11 @@
     const [r = "", a = ""] = parts;
     let html, after = () => {};
     if (r === "personnage") html = pagePerso(a);
-    else if (r === "relations") { if (a) html = pageRelation(a); else { html = pageRelations(); after = bindRelations; } }
+    else if (r === "relations") {
+      if (a === "r" && parts[2]) html = pageRelation(parts[2]);
+      else { const sub = a === "famille" || a === "autres" ? a : "apercu"; html = pageRelations(sub); if (sub !== "apercu") after = () => bindRelations(sub); }
+    }
+    else if (r === "purgatoire" && D.purgatoire) html = pagePurgatoire();
     else if (r === "fils") { html = pageFils(); after = () => document.querySelectorAll("[data-s]").forEach((el) => el.addEventListener("click", (e) => { e.preventDefault(); filState.s = el.dataset.s; route(); })); }
     else if (r === "galerie") { html = pageGalerie(); after = () => { lbList = D.galerie.filter((x) => safeSrc(x.image)); document.querySelectorAll(".shot").forEach((s) => s.addEventListener("click", () => lb(Number(s.dataset.k)))); }; }
     else html = pageHome();
@@ -307,7 +414,7 @@
     document.body.classList.remove("menu-open"); $("#burger").setAttribute("aria-expanded", "false");
     markNav(r); scrollTo(0, 0); after(); FX.observe(app);
     setTimeout(() => app.classList.remove("enter"), 700);
-    document.title = (r ? { personnage: "Personnage", relations: "Relations", fils: "Fils RP", galerie: "Galerie" }[r] + " — " : "") + D.identite.nom;
+    document.title = (r ? { personnage: "Personnage", relations: "Relations", fils: "Fils RP", galerie: "Galerie", purgatoire: "Purgatoire" }[r] + " — " : "") + D.identite.nom;
   }
 
   /* ---------- interface ---------- */
@@ -321,10 +428,10 @@
   addEventListener("scroll", () => $("#nav").classList.toggle("stuck", scrollY > 20), { passive: true });
   addEventListener("resize", () => markNav((location.hash.replace(/^#\/?/, "").split("/")[0]) || ""));
   addEventListener("hashchange", route);
+  if (document.fonts) document.fonts.ready.then(() => markNav((location.hash.replace(/^#\/?/, "").split("/")[0]) || ""));
 
-  buildNav();
   loadContent().then((d) => {
-    D = d; $("#credits").textContent = d.identite.credits || "";
+    D = d; buildNav(); document.body.classList.toggle("dead", !!(d.purgatoire && d.purgatoire.actif)); $("#credits").textContent = d.identite.credits || "";
     route();
   });
 })();

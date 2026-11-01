@@ -36,3 +36,6 @@ body.admin { font-size: 15px; line-height: 1.5; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 .toast.err { background: #a3402f; }
 @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } .tabs { position: static; flex-direction: row; flex-wrap: wrap; } }
+.field.check { display: flex; align-items: center; gap: 10px; }
+.field.check > span { margin: 0; }
+.field.check input { width: 20px; height: 20px; accent-color: var(--eye); }
