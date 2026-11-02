@@ -43,8 +43,22 @@
     respect: { g: "respect", n: 2, label: "Respect", html: '<b class="h s">★</b>' },
     mort: { g: "mort", n: null, label: "Décédé(e)", html: '<b class="h d">🕊</b>' },
   };
-  const appr = (k) => APP[k] || APP.neutre;
-  const apprBadge = (k) => `<span class="appr appr-${appr(k).g}" title="${esc(appr(k).label)}">${appr(k).html}</span>`;
+  // Une période = polarité (pos1-3 / neg1-3, optionnelle) + drapeaux optionnels neutre / respect / mort.
+  // Les anciennes valeurs appreciation: "neutre" | "respect" | "mort" restent comprises.
+  function appr(p) {
+    const a = (p && p.appreciation) || "";
+    const pol = /^(pos|neg)[123]$/.test(a) ? a : "";
+    const neutre = !!(p && p.neutre) || a === "neutre", respect = !!(p && p.respect) || a === "respect", mort = !!(p && p.mort) || a === "mort";
+    const n = pol ? (pol[0] === "p" ? 1 : -1) * Number(pol[3]) : 0;
+    let html = pol ? (n > 0 ? HR : HG).repeat(Math.abs(n)) : "";
+    if (neutre) html += HR + HG;
+    if (respect) html += APP.respect.html;
+    if (mort) html += APP.mort.html;
+    if (!html) html = HR + HG;
+    const lab = [pol ? (n > 0 ? "Appréciation positive" : "Aversion") : "", neutre ? "Neutre" : "", respect ? "Respect" : "", mort ? "Décédé(e)" : ""].filter(Boolean);
+    return { pol, n, neutre, respect, mort, html, label: lab.join(" · ") || "Neutre", g: pol ? (n > 0 ? "pos" : "neg") : neutre ? "neutre" : respect ? "respect" : mort ? "mort" : "neutre" };
+  }
+  const apprBadge = (p) => `<span class="appr appr-${appr(p).g}" title="${esc(appr(p).label)}">${appr(p).html}</span>`;
   const phasesOf = (r) => [...(r.phases || [])].sort((a, b) => (Number(a.age) || 0) - (Number(b.age) || 0));
   const latest = (r) => { const p = phasesOf(r); return p[p.length - 1] || { age: "", appreciation: "neutre", description: "" }; };
 
@@ -74,7 +88,7 @@
     const letters = i.nom.split(" ").map((w) => `<span class="w">${[...w].map((c) => `<span class="ch" style="--n:${n0++}">${esc(c)}</span>`).join("")}</span>`).join('<span class="sp"> </span>');
     const traits = [...(D.caractere.qualites || []), ...(D.caractere.defauts || [])].map((t) => t.titre);
     const marquee = [...traits, ...traits].map((t) => `<span>${esc(t)}</span><i>✦</i>`).join("");
-    const living = D.relations.filter((r) => latest(r).appreciation !== "mort").length;
+    const living = D.relations.filter((r) => !appr(latest(r)).mort).length;
     const portals = [
       ["#/personnage", "Le personnage", "Caractère, physique, histoire et convictions de la reine de l'Ombre.", "✦", ""],
       ["#/relations", "Relations", "Famille, amis, rivaux : l'évolution de chaque lien au fil des lunes.", "♥", `${D.relations.length} liens`],
@@ -164,7 +178,7 @@
 
   /* --- relations --- */
   const relState = { q: "", clan: "", type: "", grp: "" };
-  const LEGEND = [["pos3", "Appréciation positive", ""], ["neg3", "Aversion", ""], ["neutre", "Neutre", ""], ["respect", "Respect", ""], ["mort", "Décédé(e)", ""]];
+  const LEGEND = [["pos3", "Appréciation positive (1 à 3 ♥)", ""], ["neg3", "Aversion (1 à 3 ♥)", ""], ["neutre", "Neutre (optionnel)", ""], ["respect", "Respect (optionnel)", ""], ["mort", "Décédé(e) (optionnel)", ""]];
   const RSUBS = [["apercu", "Vue d'ensemble"], ["famille", "Famille"], ["autres", "Autres relations"]];
   const isFam = (r) => r.groupe === "famille";
   const rlink = (r) => `#/relations/r/${slug(r.nom)}`;
@@ -175,7 +189,7 @@
     return `<a class="rel tilt rv" style="--i:${n % 8}" href="${rlink(r)}">
       ${avatar(r)}<div class="rel-body"><h3>${esc(r.nom)}</h3>
       <p class="muted">${esc(r.lien)}${r.clan ? " · " + esc(r.clan) : ""}</p>
-      <div class="rel-foot">${apprBadge(l.appreciation)}<span class="tag ${r.type === "PJ" ? "pj" : ""}">${esc(r.type || "PNJ")}</span>${r.rang ? `<span class="tag soft">${esc(r.rang)}</span>` : ""}</div></div></a>`;
+      <div class="rel-foot">${apprBadge(l)}<span class="tag ${r.type === "PJ" ? "pj" : ""}">${esc(r.type || "PNJ")}</span>${r.rang ? `<span class="tag soft">${esc(r.rang)}</span>` : ""}</div></div></a>`;
   }
   function relFiltered(fam) {
     const q = relState.q.trim().toLowerCase();
@@ -183,7 +197,7 @@
       if (isFam(r) !== fam) return false;
       if (relState.clan && r.clan !== relState.clan) return false;
       if (relState.type && (r.type || "PNJ") !== relState.type) return false;
-      if (relState.grp && appr(latest(r).appreciation).g !== relState.grp) return false;
+      if (relState.grp) { const a = appr(latest(r)); if (!({ pos: a.n > 0, neg: a.n < 0, neutre: a.neutre, respect: a.respect, mort: a.mort })[relState.grp]) return false; }
       return !q || [r.nom, r.lien, r.clan, r.rang, r.joueur].join(" ").toLowerCase().includes(q);
     });
   }
@@ -202,10 +216,10 @@
         const lo = c * STEP, hi = lo + STEP - 1;
         const act = [...ph].reverse().find((p) => (Number(p.age) || 0) <= hi);
         if (!act) return '<i class="mx-cell none"></i>';
-        const a = appr(act.appreciation);
-        const first = ph.some((p) => (Number(p.age) || 0) >= lo && (Number(p.age) || 0) <= hi && p.appreciation === act.appreciation);
-        const mark = a.g === "mort" && first ? "🕊" : a.g === "respect" && first ? "★" : "";
-        return `<i class="mx-cell g-${a.g} n-${Math.abs(a.n || 0)}" title="${esc(r.nom)} — ${esc(lo)}-${esc(hi)} lunes : ${esc(a.label)}">${mark}</i>`;
+        const a = appr(act);
+        const first = (Number(act.age) || 0) >= lo;
+        const mark = first ? (a.mort ? "🕊" : a.respect ? "★" : "") : "";
+        return `<i class="mx-cell g-${a.g} n-${Math.abs(a.n || 0)}${a.mort ? " dead" : ""}" title="${esc(r.nom)} — ${esc(lo)}-${esc(hi)} lunes : ${esc(a.label)}">${mark}</i>`;
       }).join("");
       return `<a class="mx-row rv" style="--cols:${cols};--i:${n % 8}" href="${rlink(r)}"><span class="mx-name">${esc(r.nom)}<small>${esc(r.lien)}</small></span>${cells}</a>`;
     }).join("");
@@ -214,7 +228,7 @@
   function summary() {
     const count = (fam) => {
       const o = { pos: 0, neg: 0, neutre: 0, respect: 0, mort: 0 };
-      D.relations.filter((r) => isFam(r) === fam).forEach((r) => o[appr(latest(r).appreciation).g]++);
+      D.relations.filter((r) => isFam(r) === fam).forEach((r) => o[appr(latest(r)).g]++);
       return o;
     };
     const names = { pos: "Positive", neg: "Aversion", neutre: "Neutre", respect: "Respect", mort: "Décédé(e)" };
@@ -224,7 +238,9 @@
         <div class="stack">${Object.keys(o).filter((k) => o[k]).map((k) => `<span class="seg g-${k}" style="flex:${o[k]}" title="${names[k]} : ${o[k]}">${o[k]}</span>`).join("")}</div>
         <div class="stack-leg">${Object.keys(o).filter((k) => o[k]).map((k) => `<span><i class="dotc g-${k}"></i>${names[k]} ${o[k]}</span>`).join("")}</div></div>`;
     };
-    return `<div class="sums">${bar("Famille", count(true))}${bar("Autres relations", count(false))}</div>`;
+    const all = D.relations.map((r) => appr(latest(r)));
+    const extra = `<p class="muted rv">🕊 ${all.filter((a) => a.mort).length} décédé(e)s · ★ ${all.filter((a) => a.respect).length} avec respect · ♥♥ ${all.filter((a) => a.neutre).length} neutre(s) — en plus de la polarité positive ou négative.</p>`;
+    return `<div class="sums">${bar("Famille", count(true))}${bar("Autres relations", count(false))}</div>${extra}`;
   }
 
   function pageRelations(sub) {
@@ -262,15 +278,15 @@
   }
 
   function graph(ph) {
-    const pts = ph.filter((p) => appr(p.appreciation).n !== null);
+    const pts = ph.filter((p) => appr(p).n !== null);
     if (pts.length < 2) return "";
     const ages = pts.map((p) => Number(p.age) || 0), a0 = Math.min(...ages), a1 = Math.max(...ages) || 1;
     const X = (a) => 40 + ((a - a0) / (a1 - a0 || 1)) * 520, Y = (n) => 90 - n * 26;
-    const d = pts.map((p, i) => `${i ? "L" : "M"}${X(Number(p.age) || 0)},${Y(appr(p.appreciation).n)}`).join(" ");
+    const d = pts.map((p, i) => `${i ? "L" : "M"}${X(Number(p.age) || 0)},${Y(appr(p).n)}`).join(" ");
     return `<svg class="graph rv" viewBox="0 0 600 180" role="img" aria-label="Évolution de l'appréciation">
       <line x1="30" x2="580" y1="90" y2="90" class="axis"/><text x="6" y="30" class="lab">♥</text><text x="6" y="160" class="lab">♥</text>
       <path d="${d}" class="curve"/>
-      ${pts.map((p) => `<g><circle cx="${X(Number(p.age) || 0)}" cy="${Y(appr(p.appreciation).n)}" r="6" class="pt"/><text x="${X(Number(p.age) || 0)}" y="${Y(appr(p.appreciation).n) + (appr(p.appreciation).n >= 0 ? -14 : 24)}" text-anchor="middle" class="lab">${esc(p.age)} l.</text></g>`).join("")}
+      ${pts.map((p) => `<g><circle cx="${X(Number(p.age) || 0)}" cy="${Y(appr(p).n)}" r="6" class="pt"/><text x="${X(Number(p.age) || 0)}" y="${Y(appr(p).n) + (appr(p).n >= 0 ? -14 : 24)}" text-anchor="middle" class="lab">${esc(p.age)} l.</text></g>`).join("")}
     </svg>`;
   }
   function pageRelation(id) {
@@ -281,12 +297,12 @@
       <a class="back rv" href="#/relations/${isFam(r) ? "famille" : "autres"}">← ${isFam(r) ? "Famille" : "Autres relations"}</a>
       <header class="rel-hero rv">${avatar(r, "xl")}
         <div><span class="kicker">${esc(r.lien)}</span><h1>${esc(r.nom)}</h1>
-        <div class="rel-foot">${apprBadge(l.appreciation)}<span class="muted">${esc(appr(l.appreciation).label)}</span></div>
+        <div class="rel-foot">${apprBadge(l)}<span class="muted">${esc(appr(l).label)}</span></div>
         <div class="chips">${r.clan ? `<span class="tag">${esc(r.clan)}</span>` : ""}${r.rang ? `<span class="tag soft">${esc(r.rang)}</span>` : ""}
         <span class="tag ${r.type === "PJ" ? "pj" : ""}">${esc(r.type || "PNJ")}${r.type === "PJ" && r.joueur ? " · " + esc(r.joueur) : ""}</span></div></div></header>
       ${subh("Évolution du lien")}${graph(ph)}
       <ol class="timeline phases">${ph.map((p) => `<li class="rv"><span class="dot age">${esc(p.age)}<small>lunes</small></span>
-        <div class="phase tilt"><div class="phase-top">${apprBadge(p.appreciation)}<span class="muted">${esc(appr(p.appreciation).label)}</span></div><p>${esc(p.description)}</p></div></li>`).join("")}</ol>
+        <div class="phase tilt"><div class="phase-top">${apprBadge(p)}<span class="muted">${esc(appr(p).label)}</span></div><p>${esc(p.description)}</p></div></li>`).join("")}</ol>
     </section>`;
   }
 

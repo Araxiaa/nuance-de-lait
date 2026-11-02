@@ -78,3 +78,8 @@
 .dest > div b { display: block; font-family: "Cormorant Garamond", serif; font-size: 1.8rem; font-style: italic; } .dest small { color: var(--ink-soft); }
 .dest > div.on { opacity: 1; border-style: solid; border-color: var(--gold); box-shadow: 0 0 34px -8px var(--gold); background: var(--card); }
 @media (max-width: 860px) { .two, .dest, .calc { grid-template-columns: 1fr; } .purg-grid { grid-template-columns: 1fr; } .v-score { margin-left: 0; } .mx-head, .mx-row { grid-template-columns: 130px repeat(var(--cols), 1fr); } }
+
+.mx-cell { position: relative; }
+.mx-cell.dead::after { content: ""; position: absolute; inset: 0; border-radius: 8px; background: repeating-linear-gradient(135deg, rgba(50, 42, 80, .55) 0 4px, transparent 4px 8px); }
+.mx-cell.g-mort { background: #6b6882; }
+.mx-cell.g-neutre.dead, .mx-cell.g-respect.dead { opacity: .9; }

@@ -22,20 +22,23 @@
   }
 
   /* ---------- données ---------- */
-  const APPR = [
-    ["pos3", "♥♥♥", "Positive forte"], ["pos2", "♥♥", "Positive"], ["pos1", "♥", "Positive légère"],
-    ["neutre", "♥♥", "Neutre"], ["respect", "★", "Respect"],
-    ["neg1", "♥", "Aversion légère"], ["neg2", "♥♥", "Aversion"], ["neg3", "♥♥♥", "Aversion forte"], ["mort", "🕊", "Décédé(e)"],
-  ];
-  const apprHtml = (k) => {
-    if (k === "respect") return '<span class="h-s">★</span>';
-    if (k === "mort") return "🕊";
-    if (k === "neutre") return '<span class="h-r">♥</span><span class="h-g">♥</span>';
-    const n = +k.slice(-1) || 1;
-    return `<span class="${k.startsWith("neg") ? "h-g" : "h-r"}">${"♥".repeat(n)}</span>`;
+  // Période = polarité (pos1-3 / neg1-3, optionnelle) + options informatives cumulables : neutre, respect, mort
+  const POLS = [["", "Aucune"], ["pos1", "♥"], ["pos2", "♥♥"], ["pos3", "♥♥♥"], ["neg1", "♥"], ["neg2", "♥♥"], ["neg3", "♥♥♥"]];
+  const FLAGS = [["neutre", "Neutre ♥♥"], ["respect", "Respect ★"], ["mort", "Décédé(e) 🕊"]];
+  function A(p) {
+    const a = (p && p.appreciation) || "", pol = /^(pos|neg)[123]$/.test(a) ? a : "";
+    return { pol, n: pol ? (pol[0] === "p" ? 1 : -1) * Number(pol[3]) : 0, neutre: !!(p && p.neutre) || a === "neutre", respect: !!(p && p.respect) || a === "respect", mort: !!(p && p.mort) || a === "mort" };
+  }
+  const apprHtml = (p) => {
+    const a = A(p); let h = "";
+    if (a.pol) h += `<span class="${a.n > 0 ? "h-r" : "h-g"}">${"♥".repeat(Math.abs(a.n))}</span>`;
+    if (a.neutre) h += '<span class="h-r">♥</span><span class="h-g">♥</span>';
+    if (a.respect) h += '<span class="h-s">★</span>';
+    if (a.mort) h += "🕊";
+    return h || '<span class="h-r">♥</span><span class="h-g">♥</span>';
   };
+  const legacy = (p) => { const a = A(p); if (["neutre", "respect", "mort"].includes(p.appreciation)) p.appreciation = ""; p.neutre = a.neutre; p.respect = a.respect; p.mort = a.mort; return p; };
   const SELECTS = {
-    appreciation: APPR.map((a) => [a[0], a[2]]),
     groupe: [["famille", "Famille"], ["autres", "Autres relations"]],
     type: [["PNJ", "PNJ"], ["PJ", "PJ (joueur·se)"]],
     statut: [["En cours", "En cours"], ["Terminé", "Terminé"]],
@@ -48,7 +51,7 @@
   };
   const label = (k) => LABELS[k] || (String(k).charAt(0).toUpperCase() + String(k).slice(1).replace(/_/g, " "));
   const SAMPLES = {
-    phases: { age: 0, appreciation: "neutre", description: "" },
+    phases: { age: 0, appreciation: "", neutre: false, respect: false, mort: false, description: "" },
     fils: { titre: "", lien: "", participants: [], lunes: 0, description: "", statut: "En cours" },
     galerie: { titre: "", image: "", description: "" },
   };
@@ -94,6 +97,7 @@
       if (isArr(state[k]) !== isArr(s[k])) continue;
       state[k] = !isArr(s[k]) && s[k] && typeof s[k] === "object" ? { ...state[k], ...s[k] } : s[k];
     }
+    state.relations.forEach((r) => (r.phases || []).forEach(legacy));
     saved = JSON.stringify(state);
     try {
       const d = localStorage.getItem(DRAFT);
@@ -289,10 +293,14 @@
     const draw = () => {
       box.innerHTML = "";
       r.phases.forEach((p, i) => {
-        const chips = h("div", { class: "chips" }, APPR.map((a) => h("button", { type: "button", class: "chip" + (p.appreciation === a[0] ? " on" : ""), title: a[2], html: a[0] === "neutre" ? apprHtml("neutre") : apprHtml(a[0]), onclick: () => { p.appreciation = a[0]; touch(); refresh(); draw(); } })));
+        const pick = () => { touch(); refresh(); draw(); };
+        const pols = h("div", { class: "chips" }, POLS.map((a, k) => h("button", { type: "button", class: "chip" + ((p.appreciation || "") === a[0] ? " on" : ""), title: a[0] ? (a[0][0] === "p" ? "Appréciation positive" : "Aversion") : "Pas de polarité",
+          html: a[0] ? `<span class="${a[0][0] === "p" ? "h-r" : "h-g"}">${a[1]}</span>` : a[1], onclick: () => { p.appreciation = a[0]; pick(); } })));
+        const flags = h("div", { class: "chips" }, FLAGS.map((f) => h("button", { type: "button", class: "chip" + (p[f[0]] ? " on" : ""), title: "Optionnel, informatif — cumulable", onclick: () => { p[f[0]] = !p[f[0]]; pick(); } }, f[1])));
+        const chips = h("div", {}, pols, h("div", { style: "height:6px" }), flags);
         box.append(h("div", { class: "phase" },
           field(p, "age", { label: "Âge (lunes)", on: refresh }),
-          h("div", { class: "field" }, h("span", {}, "Appréciation à cet âge"), chips),
+          h("div", { class: "field" }, h("span", {}, "Appréciation (♥ positive ou aversion) + options"), chips),
           h("div", { class: "desc" }, field(p, "description", { label: "Description de la relation à cet âge", rows: 3 })),
           h("button", { type: "button", class: "btn small danger del", title: "Supprimer cette période", onclick: () => { if (r.phases.length > 1 && !confirm("Supprimer cette période ?")) return; r.phases.splice(i, 1); touch(); refresh(); draw(); } }, "✕")));
       });
@@ -301,27 +309,29 @@
     wrap.append(h("h3", { style: "margin:16px 0 8px;font-style:italic;color:var(--eye-d)" }, "Évolution de la relation"),
       box,
       h("div", { class: "bar-in", style: "margin-top:10px;justify-content:flex-start" },
-        h("button", { class: "btn small", onclick: () => { const last = r.phases[r.phases.length - 1] || {}; r.phases.push({ age: Math.min(curAge(), (Number(last.age) || 0) + 6) || curAge(), appreciation: last.appreciation || "neutre", description: "" }); touch(); refresh(); draw(); } }, "+ Ajouter une période"),
+        h("button", { class: "btn small", onclick: () => { const last = r.phases[r.phases.length - 1] || {}; r.phases.push({ age: Math.min(curAge(), (Number(last.age) || 0) + 6) || curAge(), appreciation: last.appreciation || "", neutre: false, respect: false, mort: !!last.mort, description: "" }); touch(); refresh(); draw(); } }, "+ Ajouter une période"),
         h("button", { class: "btn small ghost", onclick: () => { r.phases.sort((a, b) => (Number(a.age) || 0) - (Number(b.age) || 0)); touch(); draw(); } }, "↕ Trier par âge")));
     return wrap;
   }
-  const relBadge = (r) => { const p = [...(r.phases || [])].sort((a, b) => a.age - b.age).pop(); return p ? apprHtml(p.appreciation) : ""; };
+  const lastPh = (r) => [...(r.phases || [])].sort((a, b) => a.age - b.age).pop();
+  const relBadge = (r) => { const p = lastPh(r); return p ? apprHtml(p) : ""; };
   function bulkRelations(done) {
     const d = h("dialog");
-    const ta = h("textarea", { placeholder: "Sérénité de Clématite ; Père ; famille ; Clan de l'Ombre ; Guerrier ; PNJ ; ; mort ; 74 ; Un guerrier respecté…" });
+    const ta = h("textarea", { placeholder: "Sérénité de Clématite ; Père ; famille ; Clan de l'Ombre ; Guerrier ; PNJ ; ; pos3 mort ; 74 ; Un guerrier respecté…" });
     d.append(h("h3", { style: "font-size:1.8rem;font-style:italic;margin-bottom:6px" }, "Ajouter plusieurs relations d'un coup"),
-      h("p", { html: "Une relation par ligne, champs séparés par <code>;</code> (ou <code>|</code>) dans cet ordre :<br><code>Nom ; Lien ; famille/autres ; Clan ; Rang ; PNJ/PJ ; Joueur ; Appréciation ; Âge ; Description</code><br>Seul le nom est obligatoire. Appréciation : <code>pos1-3</code>, <code>neg1-3</code>, <code>neutre</code>, <code>respect</code>, <code>mort</code> (ou <code>+ ++ +++ - -- ---</code>)." }),
+      h("p", { html: "Une relation par ligne, champs séparés par <code>;</code> (ou <code>|</code>) dans cet ordre :<br><code>Nom ; Lien ; famille/autres ; Clan ; Rang ; PNJ/PJ ; Joueur ; Appréciation ; Âge ; Description</code><br>Seul le nom est obligatoire. Appréciation : <code>pos1-3</code> ou <code>neg1-3</code> (ou <code>+ ++ +++ - -- ---</code>), plus si besoin <code>neutre</code>, <code>respect</code>, <code>mort</code> — cumulables, ex. <code>pos2 respect mort</code>." }),
       ta, h("div", { class: "bar-in", style: "margin-top:12px;justify-content:flex-end" },
         h("button", { class: "btn", onclick: () => d.close() }, "Annuler"),
         h("button", { class: "btn primary", onclick: () => {
-          const alias = { "+": "pos1", "++": "pos2", "+++": "pos3", "-": "neg1", "--": "neg2", "---": "neg3" };
           let n = 0;
           ta.value.split("\n").map((l) => l.trim()).filter(Boolean).forEach((l) => {
             const c = l.split(/\s*[;|\t]\s*/);
             if (!c[0]) return;
-            const ap = (c[7] || "neutre").toLowerCase(); const g = (c[2] || "").toLowerCase();
-            state.relations.push({ nom: c[0], lien: c[1] || "", groupe: g.startsWith("f") ? "famille" : "autres", clan: c[3] || "Clan de l'Ombre", rang: c[4] || "", type: /pj/i.test(c[5] || "") ? "PJ" : "PNJ", joueur: c[6] || "", image: "",
-              phases: [{ age: parseInt(c[8]) || curAge(), appreciation: APPR.some((a) => a[0] === alias[ap] || a[0] === ap) ? alias[ap] || ap : "neutre", description: c.slice(9).join(" ; ") }] });
+            const toks = (c[7] || "").toLowerCase().split(/[\s,/]+/).filter(Boolean), g = (c[2] || "").toLowerCase();
+            const alias = { "+": "pos1", "++": "pos2", "+++": "pos3", "-": "neg1", "--": "neg2", "---": "neg3" };
+            const ph = { age: parseInt(c[8]) || curAge(), appreciation: "", neutre: false, respect: false, mort: false, description: c.slice(9).join(" ; ") };
+            toks.forEach((t) => { t = alias[t] || t; if (/^(pos|neg)[123]$/.test(t)) ph.appreciation = t; else if (t in ph) ph[t] = true; });
+            state.relations.push({ nom: c[0], lien: c[1] || "", groupe: g.startsWith("f") ? "famille" : "autres", clan: c[3] || "Clan de l'Ombre", rang: c[4] || "", type: /pj/i.test(c[5] || "") ? "PJ" : "PNJ", joueur: c[6] || "", image: "", phases: [ph] });
             n++;
           });
           d.close(); d.remove(); if (n) { toast(`${n} relation(s) ajoutée(s) — pensez à enregistrer`); done(); }
@@ -334,10 +344,10 @@
     groupBy: { of: (r) => (r.groupe === "famille" ? "famille" : "autres"), groups: [["famille", "Famille"], ["autres", "Autres relations"]] },
     filters: [
       { all: "Tous les groupes", opts: [["famille", "Famille"], ["autres", "Autres"]], test: (r, v) => (r.groupe === "famille" ? "famille" : "autres") === v },
-      { all: "Toutes appréciations", opts: [["pos", "Positives"], ["neg", "Aversions"], ["neutre", "Neutres"], ["respect", "Respect"], ["mort", "Décédé(e)s"]],
-        test: (r, v) => { const p = [...(r.phases || [])].sort((a, b) => a.age - b.age).pop(); return !!p && p.appreciation.replace(/\d/g, "") === v; } },
+      { all: "Toutes appréciations", opts: [["pos", "Positives"], ["neg", "Aversions"], ["neutre", "Neutre"], ["respect", "Respect"], ["mort", "Décédé(e)s"]],
+        test: (r, v) => { const p = lastPh(r); if (!p) return false; const a = A(p); return ({ pos: a.n > 0, neg: a.n < 0, neutre: a.neutre, respect: a.respect, mort: a.mort })[v]; } },
     ],
-    sample: () => ({ nom: "", lien: "", groupe: "autres", clan: "Clan de l'Ombre", rang: "", type: "PNJ", joueur: "", image: "", phases: [{ age: curAge(), appreciation: "neutre", description: "" }] }),
+    sample: () => ({ nom: "", lien: "", groupe: "autres", clan: "Clan de l'Ombre", rang: "", type: "PNJ", joueur: "", image: "", phases: [{ age: curAge(), appreciation: "", neutre: false, respect: false, mort: false, description: "" }] }),
     editor: relEditor,
   });
 
